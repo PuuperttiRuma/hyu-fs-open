@@ -31,9 +31,10 @@ const StatLine = ({text, value}) => {
   return <p>{text} {value}</p>
 }
 
-const Button = (props) => {
-
+const Button = ({handleClick, text}) => {
+  return <button onClick={handleClick}>{text}</button>
 }
+
 
 const App = () => {
   const [good, setGood] = useState(0)
@@ -43,9 +44,9 @@ const App = () => {
   return (
     <div>
       <h1>Give feedback</h1>
-      <button onClick={() => setGood(good + 1)}>Good</button>
-      <button onClick={() => setNeutral(neutral + 1)}>Neutral</button>
-      <button onClick={() => setBad(bad + 1)}>Bad</button>
+      <Button handleClick={() => setGood(good + 1)} text="Good"/>
+      <Button handleClick={() => setNeutral(neutral + 1)} text="Neutral"/>
+      <Button handleClick={() => setBad(bad + 1)} text="Bad" />
 
       <Statistics
         good={good}

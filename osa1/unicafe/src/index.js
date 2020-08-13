@@ -2,16 +2,24 @@ import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
-const Statistics = ({good, neutral, bad}) => {
+const Statistics = ({ good, neutral, bad }) => {
+  if (good + neutral + bad === 0) {
+    return (
+      <>
+        <h1>Statistics</h1>
+        <p>No feedback give</p>
+      </>
+    )
+  }
   return (
     <>
-    <h1>Statistics</h1>
-    <p>Good {good}</p>
-    <p>Neutral {neutral}</p>
-    <p>Bad {bad}</p>
-    <p>All {good + neutral + bad}</p>
-    <p>average {((good - bad) / (good + neutral + bad)).toFixed(2)}</p>
-    <p>positive {(good / (good + neutral + bad) * 100).toFixed(0)}%</p>
+      <h1>Statistics</h1>
+      <p>Good {good}</p>
+      <p>Neutral {neutral}</p>
+      <p>Bad {bad}</p>
+      <p>All {good + neutral + bad}</p>
+      <p>average {((good - bad) / (good + neutral + bad)).toFixed(2)}</p>
+      <p>positive {(good / (good + neutral + bad) * 100).toFixed(0)}%</p>
     </>
   )
 }

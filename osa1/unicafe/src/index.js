@@ -14,14 +14,25 @@ const Statistics = ({ good, neutral, bad }) => {
   return (
     <>
       <h1>Statistics</h1>
-      <p>Good {good}</p>
-      <p>Neutral {neutral}</p>
-      <p>Bad {bad}</p>
-      <p>All {good + neutral + bad}</p>
-      <p>average {((good - bad) / (good + neutral + bad)).toFixed(2)}</p>
-      <p>positive {(good / (good + neutral + bad) * 100).toFixed(0)}%</p>
+      <StatLine text="Good" value={good} />
+      <StatLine text="Neutral" value={neutral} />
+      <StatLine text="Bad" value={bad} />
+      <StatLine text="All" value={good + neutral + bad} />
+      <StatLine text="Average" value={((good - bad) / (good + neutral + bad)).toFixed(2)} />
+      <StatLine text="Positive" value={(good / (good + neutral + bad) * 100).toFixed(0)} />
     </>
   )
+}
+
+const StatLine = ({text, value}) => {
+  if (text === "Positive"){
+    return <p>{text} {value}%</p>  
+  }
+  return <p>{text} {value}</p>
+}
+
+const Button = (props) => {
+
 }
 
 const App = () => {

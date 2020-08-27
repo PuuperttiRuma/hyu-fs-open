@@ -1,20 +1,29 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
 
 import Numbers from './components/Numbers'
 import AddName from './components/AddName'
 import SearchBar from './components/SearchBar'
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-123456' },
-    { name: 'Ada Lovelace', number: '39-44-5323523' },
-    { name: 'Dan Abramov', number: '12-43-234345' },
-    { name: 'Mary Poppendieck', number: '39-23-6423122' }
-  ])
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [searchName, setSearchName] = useState('')
-  const [filteredPersons, setFilteredPersons] = useState(persons)
+  const [filteredPersons, setFilteredPersons] = useState([])
+
+  useEffect(() => {
+    console.log("Effect");
+    axios
+      .get('http://localhost:3001/persons')
+      .then(response => {
+        // const fetchedPersons = response.data
+        console.log(response.data)
+        setPersons(response.data)
+        setFilteredPersons(response.data)
+      })
+  }, [])
+
 
   const addPerson = (e) => {
     e.preventDefault()
@@ -51,12 +60,12 @@ const App = () => {
       person.name.toLowerCase().includes(e.target.value.toLowerCase())))
     setFilteredPersons(newFiltered)
   }
- 
+
   return (
     <div>
       <h1>Phonebook</h1>
       <h2>Add a new name</h2>
-      <AddName 
+      <AddName
         addPerson={addPerson}
         newName={newName}
         newNumber={newNumber}

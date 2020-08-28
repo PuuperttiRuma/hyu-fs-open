@@ -26,7 +26,9 @@ const App = () => {
 
   /**
    * When search word changes filter the countries according
-   * the country's name
+   * the country's name.
+   * I don't know whether it is a good idea or not to
+   * have this as an effect.
   */
   useEffect(() => {
     if (searchWord === '') return
@@ -38,8 +40,8 @@ const App = () => {
       )      
     }))
     //console.log(newFilteredCountries)
-    setFilteredCountries(newFilteredCountries)
-  }, [searchWord])
+    setFilteredCountries(newFilteredCountries) //eslint-disable-next-line
+  }, [searchWord]) 
 
   return (
     <div>

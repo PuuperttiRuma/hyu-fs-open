@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 
-import CountryInfo from './components/CountryInfo'
+import SearchResults from './components/SearchResults'
 
 const App = () => {
   const [data, setData] = useState([])
   const [filteredCountries, setFilteredCountries] = useState([])
   const [searchWord, setSearchWord] = useState('')
+  const [selectedCountry, setSelectedCountry] = useState(null)
 
   //Data fetching
   useEffect(() => {
@@ -40,14 +41,31 @@ const App = () => {
       )      
     }))
     //console.log(newFilteredCountries)
+
+    //Set the selected country
+    const selected = newFilteredCountries.length === 1 
+      ? newFilteredCountries[0] 
+      : null
+    setSelectedCountry(selected)
+
     setFilteredCountries(newFilteredCountries) //eslint-disable-next-line
   }, [searchWord]) 
+
+  const handleCountryChange = (country) => {
+    console.log(country)
+    setSelectedCountry(country)
+    setSearchWord('')
+  }
 
   return (
     <div>
       find countries
       <input type="text" value={searchWord} onChange={handleSearch} />
-      <CountryInfo countries={filteredCountries} />
+      <SearchResults
+        selectedCountry={selectedCountry}
+        countries={filteredCountries} 
+        handleCountryChange={handleCountryChange}
+      />
     </div>
   );
 }

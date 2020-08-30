@@ -9,21 +9,19 @@ const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
-  const [searchName, setSearchName] = useState('')
+  const [searchTerm, setSearchTerm] = useState('')
   const [filteredPersons, setFilteredPersons] = useState([])
 
   useEffect(() => {
-    console.log("Effect");
+    //console.log("Fetching database");
     axios
       .get('http://localhost:3001/persons')
       .then(response => {
-        // const fetchedPersons = response.data
-        console.log(response.data)
+        //console.log(response.data)
         setPersons(response.data)
         setFilteredPersons(response.data)
       })
   }, [])
-
 
   const addPerson = (e) => {
     e.preventDefault()
@@ -37,9 +35,14 @@ const App = () => {
       return
     }
 
-    setPersons(persons.concat(newPerson))
-    setNewName('')
-    setNewNumber('')
+    axios
+      .post('http://localhost:3001/persons', newPerson)
+      .then(response => {
+        //console.log(response);
+        setPersons(persons.concat(response.data))
+        setNewName('')
+        setNewNumber('')
+      })
   }
 
   const handleNameChange = (e) => {
@@ -51,15 +54,22 @@ const App = () => {
   }
 
   const handleSearchChange = (e) => {
-    setSearchName(e.target.value)
-    if (e.target.value === "") {
+    setSearchTerm(e.target.value.toLowerCase())
+  }
+
+  useEffect(() => {
+    if (searchTerm === "") {
       setFilteredPersons(persons)
       return
     }
     const newFiltered = persons.filter((person =>
-      person.name.toLowerCase().includes(e.target.value.toLowerCase())))
+      person
+        .name
+        .toLowerCase()
+        .includes(searchTerm)
+      ))
     setFilteredPersons(newFiltered)
-  }
+  }, [searchTerm, persons])
 
   return (
     <div>
@@ -74,13 +84,12 @@ const App = () => {
       />
       <h2>Numbers</h2>
       <SearchBar
-        searchName={searchName}
+        searchName={searchTerm}
         handleSearchChange={handleSearchChange}
       />
       <Numbers persons={filteredPersons} />
     </div>
   )
-
 }
 
 export default App

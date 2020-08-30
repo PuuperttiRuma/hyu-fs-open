@@ -47,7 +47,11 @@ const App = () => {
 
   // Delete contact
   const deletePerson = (id) => {
-    dbService
+    const name = persons
+      .find(person => person.id === id)
+      .name
+    if (window.confirm(`Do you want to delete ${name}?`)){
+      dbService
       .deletePerson(id)
       .then(
         setPersons(
@@ -55,6 +59,7 @@ const App = () => {
             .filter(person => person.id !== id)
         )
       )
+    }
   }
 
 

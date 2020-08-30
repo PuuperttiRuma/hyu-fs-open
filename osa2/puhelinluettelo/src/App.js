@@ -37,13 +37,27 @@ const App = () => {
     }
 
     dbService
-      .create(newPerson)
+      .createPerson(newPerson)
       .then(returnedPerson => {
         setPersons(persons.concat(returnedPerson))
         setNewName('')
         setNewNumber('')
       })
   }
+
+  // Delete contact
+  const deletePerson = (id) => {
+    dbService
+      .deletePerson(id)
+      .then(
+        setPersons(
+          persons
+            .filter(person => person.id !== id)
+        )
+      )
+  }
+
+
   //#endregion
 
   //#region Event Handlers
@@ -91,7 +105,10 @@ const App = () => {
         searchName={searchTerm}
         handleSearchChange={handleSearchChange}
       />
-      <Numbers persons={filteredPersons} />
+      <Numbers 
+        persons={filteredPersons}
+        deletePerson={deletePerson}
+      />
     </div>
   )
 }

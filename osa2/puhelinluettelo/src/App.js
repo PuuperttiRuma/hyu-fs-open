@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
 
+import dbService from './services/puhelinluettelo'
 import Numbers from './components/Numbers'
 import AddName from './components/AddName'
 import SearchBar from './components/SearchBar'
@@ -12,17 +12,18 @@ const App = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [filteredPersons, setFilteredPersons] = useState([])
 
+  //#region Database functions
+
+  //Fetch initial database
   useEffect(() => {
-    //console.log("Fetching database");
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        //console.log(response.data)
-        setPersons(response.data)
-        setFilteredPersons(response.data)
+    dbService
+      .getAll()
+      .then(initialPersons => {
+        setPersons(initialPersons)
       })
   }, [])
 
+  // Adding new contact
   const addPerson = (e) => {
     e.preventDefault()
     const newPerson = {
@@ -35,16 +36,17 @@ const App = () => {
       return
     }
 
-    axios
-      .post('http://localhost:3001/persons', newPerson)
-      .then(response => {
-        //console.log(response);
-        setPersons(persons.concat(response.data))
+    dbService
+      .create(newPerson)
+      .then(returnedPerson => {
+        setPersons(persons.concat(returnedPerson))
         setNewName('')
         setNewNumber('')
       })
   }
+  //#endregion
 
+  //#region Event Handlers
   const handleNameChange = (e) => {
     setNewName(e.target.value)
   }
@@ -56,9 +58,11 @@ const App = () => {
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value.toLowerCase())
   }
+  //#endregion
 
+  // Search
   useEffect(() => {
-    if (searchTerm === "") {
+    if (searchTerm === '') {
       setFilteredPersons(persons)
       return
     }
@@ -67,7 +71,7 @@ const App = () => {
         .name
         .toLowerCase()
         .includes(searchTerm)
-      ))
+    ))
     setFilteredPersons(newFiltered)
   }, [searchTerm, persons])
 

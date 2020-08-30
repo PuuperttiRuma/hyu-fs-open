@@ -32,8 +32,23 @@ const App = () => {
     }
 
     if (persons.some(person => person.name === newPerson.name)) {
-      alert(`${newName} is already in the phonebook`)
-      return
+      if(window.confirm(`${newName} is already in the phonebook, do you want to replace the old number with a new one?`)){
+        
+        const personRef = persons
+          .find(person => person.name === newPerson.name)
+        const changedPerson = {...personRef, number: newNumber}
+
+        dbService
+          .update(changedPerson.id, changedPerson)
+          .then(updatedPerson => {
+            setPersons(persons.map(person =>
+               person.id !== changedPerson.id
+                ? person
+                : updatedPerson))
+          })
+      } else {
+        return
+      }
     }
 
     dbService
@@ -52,7 +67,7 @@ const App = () => {
       .name
     if (window.confirm(`Do you want to delete ${name}?`)){
       dbService
-      .deletePerson(id)
+      .deleteObject(id)
       .then(
         setPersons(
           persons

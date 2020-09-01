@@ -1,20 +1,27 @@
 import React from 'react'
 
-const AddName = (props) => {
-    return (
-        <form onSubmit={props.addPerson}>
-            <div> name:
-                <input value={props.newName} onChange={props.handleNameChange} />
-            </div>
-            <div> number:
-                <input value={props.newNumber} onChange={props.handleNumberChange} />
-            </div>
-            <div>
-                <button type="submit">add</button>
-            </div>
-        </form>
-    )
-}
+const AddName = ({
+  addPerson,
+  newName,
+  newNumber,
+  handleNameChange,
+  handleNumberChange,
+}) => (
+  <form onSubmit={addPerson}>
+    <div>
+      {' '}
+      name:
+      <input value={newName} onChange={handleNameChange} />
+    </div>
+    <div>
+      {' '}
+      number:
+      <input value={newNumber} onChange={handleNumberChange} />
+    </div>
+    <div>
+      <button type="submit">add</button>
+    </div>
+  </form>
+)
 
 export default AddName
-

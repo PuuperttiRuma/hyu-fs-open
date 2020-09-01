@@ -16,11 +16,9 @@ const App = () => {
 
   //Fetch initial database
   useEffect(() => {
-    dbService
-      .getAll()
-      .then(initialPersons => {
-        setPersons(initialPersons)
-      })
+    dbService.getAll().then((initialPersons) => {
+      setPersons(initialPersons)
+    })
   }, [])
 
   // Adding new contact
@@ -28,55 +26,46 @@ const App = () => {
     e.preventDefault()
     const newPerson = {
       name: newName,
-      number: newNumber
+      number: newNumber,
     }
-
-    if (persons.some(person => person.name === newPerson.name)) {
-      if(window.confirm(`${newName} is already in the phonebook, do you want to replace the old number with a new one?`)){
-        
-        const personRef = persons
-          .find(person => person.name === newPerson.name)
-        const changedPerson = {...personRef, number: newNumber}
-
+    //Check if new person is NOT already in the contacts, and if not add to DB
+    if (!persons.some((person) => person.name === newPerson.name)) {
+      dbService.createPerson(newPerson).then((returnedPerson) => {
+        setPersons(persons.concat(returnedPerson))
+        setNewName('')
+        setNewNumber('')
+      })
+    // IF the new person IS in the contacts 
+    } else { 
+      if (window.confirm(`${newName} is already in the phonebook, do you want to replace the old number with a new one?`)) {
+        const personRef = persons.find(
+          (person) => person.name === newPerson.name
+        )
+        const changedPerson = { ...personRef, number: newNumber }
         dbService
           .update(changedPerson.id, changedPerson)
-          .then(updatedPerson => {
-            setPersons(persons.map(person =>
-               person.id !== changedPerson.id
-                ? person
-                : updatedPerson))
+          .then((updatedPerson) => {
+            setPersons(
+              persons.map((person) =>
+                person.id !== changedPerson.id ? person : updatedPerson
+              )
+            )
           })
       } else {
         return
       }
     }
-
-    dbService
-      .createPerson(newPerson)
-      .then(returnedPerson => {
-        setPersons(persons.concat(returnedPerson))
-        setNewName('')
-        setNewNumber('')
-      })
-  }
-
+  }   
+  
   // Delete contact
   const deletePerson = (id) => {
-    const name = persons
-      .find(person => person.id === id)
-      .name
-    if (window.confirm(`Do you want to delete ${name}?`)){
+    const name = persons.find((person) => person.id === id).name
+    if (window.confirm(`Do you want to delete ${name}?`)) {
       dbService
-      .deleteObject(id)
-      .then(
-        setPersons(
-          persons
-            .filter(person => person.id !== id)
-        )
-      )
+        .deleteObject(id)
+        .then(setPersons(persons.filter((person) => person.id !== id)))
     }
   }
-
 
   //#endregion
 
@@ -100,12 +89,9 @@ const App = () => {
       setFilteredPersons(persons)
       return
     }
-    const newFiltered = persons.filter((person =>
-      person
-        .name
-        .toLowerCase()
-        .includes(searchTerm)
-    ))
+    const newFiltered = persons.filter((person) =>
+      person.name.toLowerCase().includes(searchTerm)
+    )
     setFilteredPersons(newFiltered)
   }, [searchTerm, persons])
 
@@ -125,10 +111,7 @@ const App = () => {
         searchName={searchTerm}
         handleSearchChange={handleSearchChange}
       />
-      <Numbers 
-        persons={filteredPersons}
-        deletePerson={deletePerson}
-      />
+      <Numbers persons={filteredPersons} deletePerson={deletePerson} />
     </div>
   )
 }

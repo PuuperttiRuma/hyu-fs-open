@@ -11,6 +11,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
   const [filteredPersons, setFilteredPersons] = useState([])
+  const [dbMessage, setDbMessage] = useState(null)
 
   //#region Database functions
 
@@ -22,31 +23,50 @@ const App = () => {
   }, [])
 
   const addContactToDB = (newPerson) => {
-    dbService.createPerson(newPerson).then((returnedPerson) => {
-      setPersons(persons.concat(returnedPerson))
-      setNewName('')
-      setNewNumber('')
-    })
+    dbService
+      .createPerson(newPerson)
+      .then((returnedPerson) => {
+        setPersons(persons.concat(returnedPerson))
+        setNewName('')
+        setNewNumber('')
+        databaseMessage(`Added ${newPerson.name}`)
+      })
   }
 
   const updateContactNumber = (newPerson) => {
-    const personRef = persons.find((person) => person.name === newPerson.name)
-    const changedPerson = { ...personRef, number: newNumber }
-    dbService.update(changedPerson.id, changedPerson).then((updatedPerson) => {
-      setPersons(
-        persons.map((person) =>
-          person.id !== changedPerson.id ? person : updatedPerson
+    const personRef = persons.find(
+      (person) => person.name === newPerson.name
+    )
+    const changedPerson = {
+      ...personRef,
+      number: newNumber,
+    }
+    dbService
+      .update(changedPerson.id, changedPerson)
+      .then((updatedPerson) => {
+        setPersons(
+          persons.map((person) =>
+            person.id !== changedPerson.id
+              ? person
+              : updatedPerson
+          )
         )
-      )
-    })
+        databaseMessage(`Updated number of ${newPerson.name}`)
+      })
   }
 
   const deletePersonFromDB = (id) => {
-    const name = persons.find((person) => person.id === id).name
+    const name = persons.find((person) => person.id === id)
+      .name
     if (window.confirm(`Do you want to delete ${name}?`)) {
       dbService
         .deleteObject(id)
-        .then(setPersons(persons.filter((person) => person.id !== id)))
+        .then(
+          setPersons(
+            persons.filter((person) => person.id !== id)
+          ),
+          databaseMessage(`Deleted ${name}`)
+        )
     }
   }
 
@@ -62,7 +82,11 @@ const App = () => {
       number: newNumber,
     }
     //Check if new person is NOT already in the contacts, and if not add to DB
-    if (!persons.some((person) => person.name === newPerson.name)) {
+    if (
+      !persons.some(
+        (person) => person.name === newPerson.name
+      )
+    ) {
       addContactToDB(newPerson)
     } else {
       // IF the new person IS in the contacts ask if it is to updated otherwise cancel
@@ -107,23 +131,32 @@ const App = () => {
     setFilteredPersons(newFiltered)
   }, [searchTerm, persons])
 
+  const databaseMessage = (message) => {
+    setDbMessage(message)
+    setTimeout(() => setDbMessage(null), 2000)
+  }
+
   return (
     <div>
       <h1>Phonebook</h1>
-      <h2>Add a new name</h2>
+      <h2>Add a new contact</h2>
       <AddName
         addPerson={handleAddPerson}
+        message={dbMessage}
         newName={newName}
         newNumber={newNumber}
         handleNameChange={handleNameChange}
         handleNumberChange={handleNumberChange}
       />
-      <h2>Numbers</h2>
+      <h2>Contacts</h2>
       <SearchBar
         searchName={searchTerm}
         handleSearchChange={handleSearchChange}
       />
-      <Numbers persons={filteredPersons} handleDeletePerson={handleDeletePerson} />
+      <Numbers
+        persons={filteredPersons}
+        handleDeletePerson={handleDeletePerson}
+      />
     </div>
   )
 }

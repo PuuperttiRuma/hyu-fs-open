@@ -29,30 +29,46 @@ const App = () => {
         setPersons(persons.concat(returnedPerson))
         setNewName('')
         setNewNumber('')
-        databaseMessage(`Added ${newPerson.name}`)
+        databaseMessage({
+          text: `Added ${newPerson.name}`,
+          color: 'green',
+        })
       })
   }
 
-  const updateContactNumber = (newPerson) => {
+  const updateContactNumber = (person) => {
     const personRef = persons.find(
-      (person) => person.name === newPerson.name
+      p => p.name === person.name
     )
-    const changedPerson = {
+    const newPerson = {
       ...personRef,
       number: newNumber,
     }
     dbService
-      .update(changedPerson.id, changedPerson)
+      .update(newPerson.id, newPerson)
       .then((updatedPerson) => {
         setPersons(
           persons.map((person) =>
-            person.id !== changedPerson.id
+            person.id !== newPerson.id
               ? person
               : updatedPerson
           )
         )
-        databaseMessage(`Updated number of ${newPerson.name}`)
+        databaseMessage({
+          text: `Updated number of ${newPerson.name}`,
+          color: 'green',
+        })
       })
+      .catch((error) => {
+        console.error(error)
+        databaseMessage({
+          text: `The information of ${newPerson.name} has been removed from the server`,
+          color: 'red',
+        })
+        console.log(person);
+        setPersons(persons.filter(p => p.id !== newPerson.id))
+      })
+    
   }
 
   const deletePersonFromDB = (id) => {
@@ -65,8 +81,19 @@ const App = () => {
           setPersons(
             persons.filter((person) => person.id !== id)
           ),
-          databaseMessage(`Deleted ${name}`)
+          databaseMessage({
+            text: `Deleted ${name}`,
+            color: 'green',
+          })
         )
+        .catch((error) => {
+          console.error(error)
+          databaseMessage({
+            text: `The information of ${name} has been removed from the server`,
+            color: 'red',
+          })
+          setPersons(persons.filter(p => p.id !== id))
+        })
     }
   }
 
@@ -133,7 +160,7 @@ const App = () => {
 
   const databaseMessage = (message) => {
     setDbMessage(message)
-    setTimeout(() => setDbMessage(null), 2000)
+    setTimeout(() => setDbMessage(null), 3000)
   }
 
   return (
@@ -142,7 +169,7 @@ const App = () => {
       <h2>Add a new contact</h2>
       <AddName
         addPerson={handleAddPerson}
-        message={dbMessage}
+        dbMessage={dbMessage}
         newName={newName}
         newNumber={newNumber}
         handleNameChange={handleNameChange}

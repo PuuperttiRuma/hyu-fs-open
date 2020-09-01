@@ -1,25 +1,25 @@
 import React from 'react'
 
 const Notification = ({ message }) => {
+  if (message === null) {
+    return null
+  }
   const dbNotificationStyle = {
-    color: 'green',
+    color: message.color,
     fontSize: 18,
     borderStyle: 'solid',
     borderRadius: 5,
     marginBottom: 10,
     padding: 5
   }
-  if (message === null) {
-    return null
-  }
   return (
-    <div style={dbNotificationStyle} className="databaseMessage">{message}</div>
+    <div style={dbNotificationStyle} className="databaseMessage">{message.text}</div>
   )
 }
 
 const AddName = ({
   addPerson,
-  message,
+  dbMessage,
   newName,
   newNumber,
   handleNameChange,
@@ -28,7 +28,7 @@ const AddName = ({
   return (
     <form onSubmit={addPerson}>
       <div>
-        <Notification message={message} />
+        <Notification message={dbMessage} />
         <label>
           name:
           <input value={newName} onChange={handleNameChange} />

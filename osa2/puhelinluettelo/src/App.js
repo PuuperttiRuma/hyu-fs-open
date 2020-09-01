@@ -21,44 +21,27 @@ const App = () => {
     })
   }, [])
 
-  // Adding new contact
-  const addPerson = (e) => {
-    e.preventDefault()
-    const newPerson = {
-      name: newName,
-      number: newNumber,
-    }
-    //Check if new person is NOT already in the contacts, and if not add to DB
-    if (!persons.some((person) => person.name === newPerson.name)) {
-      dbService.createPerson(newPerson).then((returnedPerson) => {
-        setPersons(persons.concat(returnedPerson))
-        setNewName('')
-        setNewNumber('')
-      })
-    // IF the new person IS in the contacts 
-    } else { 
-      if (window.confirm(`${newName} is already in the phonebook, do you want to replace the old number with a new one?`)) {
-        const personRef = persons.find(
-          (person) => person.name === newPerson.name
+  const addContactToDB = (newPerson) => {
+    dbService.createPerson(newPerson).then((returnedPerson) => {
+      setPersons(persons.concat(returnedPerson))
+      setNewName('')
+      setNewNumber('')
+    })
+  }
+
+  const updateContactNumber = (newPerson) => {
+    const personRef = persons.find((person) => person.name === newPerson.name)
+    const changedPerson = { ...personRef, number: newNumber }
+    dbService.update(changedPerson.id, changedPerson).then((updatedPerson) => {
+      setPersons(
+        persons.map((person) =>
+          person.id !== changedPerson.id ? person : updatedPerson
         )
-        const changedPerson = { ...personRef, number: newNumber }
-        dbService
-          .update(changedPerson.id, changedPerson)
-          .then((updatedPerson) => {
-            setPersons(
-              persons.map((person) =>
-                person.id !== changedPerson.id ? person : updatedPerson
-              )
-            )
-          })
-      } else {
-        return
-      }
-    }
-  }   
-  
-  // Delete contact
-  const deletePerson = (id) => {
+      )
+    })
+  }
+
+  const deletePersonFromDB = (id) => {
     const name = persons.find((person) => person.id === id).name
     if (window.confirm(`Do you want to delete ${name}?`)) {
       dbService
@@ -70,6 +53,35 @@ const App = () => {
   //#endregion
 
   //#region Event Handlers
+
+  // Adding new contact
+  const handleAddPerson = (e) => {
+    e.preventDefault()
+    const newPerson = {
+      name: newName,
+      number: newNumber,
+    }
+    //Check if new person is NOT already in the contacts, and if not add to DB
+    if (!persons.some((person) => person.name === newPerson.name)) {
+      addContactToDB(newPerson)
+    } else {
+      // IF the new person IS in the contacts ask if it is to updated otherwise cancel
+      if (
+        window.confirm(
+          `${newName} is already in the phonebook, do you want to replace the old number with a new one?`
+        )
+      ) {
+        updateContactNumber(newPerson)
+      } else {
+        return
+      }
+    }
+  }
+
+  const handleDeletePerson = (id) => {
+    deletePersonFromDB(id)
+  }
+
   const handleNameChange = (e) => {
     setNewName(e.target.value)
   }
@@ -100,7 +112,7 @@ const App = () => {
       <h1>Phonebook</h1>
       <h2>Add a new name</h2>
       <AddName
-        addPerson={addPerson}
+        addPerson={handleAddPerson}
         newName={newName}
         newNumber={newNumber}
         handleNameChange={handleNameChange}
@@ -111,7 +123,7 @@ const App = () => {
         searchName={searchTerm}
         handleSearchChange={handleSearchChange}
       />
-      <Numbers persons={filteredPersons} deletePerson={deletePerson} />
+      <Numbers persons={filteredPersons} handleDeletePerson={handleDeletePerson} />
     </div>
   )
 }

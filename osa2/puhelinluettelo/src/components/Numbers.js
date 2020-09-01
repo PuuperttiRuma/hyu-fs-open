@@ -1,22 +1,22 @@
 import React from 'react'
 
-const PersonInfo = ({ person, deletePerson }) => {
+const PersonInfo = ({ person, handleDeletePerson }) => {
   return (
     <li>
       {person.name} {person.number}
-      <button onClick={() => deletePerson(person.id)}>delete</button>
+      <button onClick={() => handleDeletePerson(person.id)}>delete</button>
     </li>
   )
 }
 
-const Phonebook = ({ persons, deletePerson }) => {
+const Phonebook = ({ persons, handleDeletePerson }) => {
   return (
     <ul>
       {persons.map((person) => (
         <PersonInfo
           person={person}
           key={person.id}
-          deletePerson={deletePerson}
+          handleDeletePerson={handleDeletePerson}
         />
       ))}
     </ul>

@@ -32,6 +32,13 @@ const App = () => {
         databaseMessage({
           text: `Added ${newPerson.name}`,
           color: 'green',
+        })      
+      })
+      .catch(error => {
+        console.log(error.response.data.error)
+        databaseMessage({
+          text: error.response.data.error,
+          color: 'red',
         })
       })
   }
@@ -104,24 +111,21 @@ const App = () => {
   // Adding new contact
   const handleAddPerson = (e) => {
     e.preventDefault()
+    if (!newName) return
+    if (!newNumber) return
+
     const newPerson = {
       name: newName,
       number: newNumber,
     }
     //Check if new person is NOT already in the contacts, and if not add to DB
-    if (
-      !persons.some(
-        (person) => person.name === newPerson.name
-      )
-    ) {
+    if (!persons.some((person) => person.name === newPerson.name)) {
       addContactToDB(newPerson)
     } else {
       // IF the new person IS in the contacts ask if it is to updated otherwise cancel
-      if (
-        window.confirm(
+      if (window.confirm(
           `${newName} is already in the phonebook, do you want to replace the old number with a new one?`
-        )
-      ) {
+        )) {
         updateContactNumber(newPerson)
       } else {
         return

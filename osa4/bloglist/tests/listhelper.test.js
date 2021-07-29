@@ -88,8 +88,8 @@ describe('total likes', () => {
 })
 
 describe('favorite blog', () => {
-  test('of empty list is undefined', () => {
-    expect(listHelper.favoriteBlog([])).toBe(undefined)
+  test('of empty list is 0', () => {
+    expect(listHelper.favoriteBlog([])).toBe(0)
   })
 
   test('is the one with most likes', () => {

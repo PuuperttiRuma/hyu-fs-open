@@ -24,4 +24,19 @@ const favoriteBlog = (blogs) => {
     )
 }
 
-module.exports = { dummy, totalLikes, favoriteBlog }
+const mostBlogs = () => {
+  /*
+  Metodi käy läpi blogilistan ja nappaa sieltä kirjoittajat
+  laskee kirjoittajien kirjoittamien blogien määrät
+  palauttaa sen jolla eniten blogeja
+  lodashin countBy näyttää hyvältä
+  */
+  const answer =  
+  {
+    author: "author",
+    blogs: 9999
+  }
+  return answer
+}
+
+module.exports = { dummy, totalLikes, favoriteBlog, mostBlogs }
